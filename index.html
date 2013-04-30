@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{
+  font-size: 16px;
+}
+#rooms, #post-msg-form, .current-room-hide{
+  display: none;
+}
+</style>
+</head>
+<body>
+<h1><a id="room-select" href="#">Nearby Walls &#x25BC;</a></h1>
+<div id="rooms"></div>
+<form id="post-msg-form">
+  <input id="data"/>
+  <input type="submit" id="datasend" value="Send" />
+</form>
+<div id="conversation"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+var socket = io.connect(document.URL);
+//var socket = io.connect('http://localhost:8080');
+socket.on('connect', function(){
+});
+
+socket.on('updaterooms', function (rooms) {
+  $('#rooms').empty();
+  $.each(rooms, function(key, value) {
+    $('#rooms').append('<div><a href="#">' + value + '</a></div>');
+  });
+  //when the client selects a new room
+  $('#rooms a').click(function(){
+    $('#rooms').hide();
+    $('#post-msg-form').show();
+    $('#room-select').html($(this).text()+ '&#x25BC;');
+    socket.emit('newroom', $(this).text());
+    $('#rooms a.current-room-hide').removeClass('current-room-hide');
+    $(this).addClass('current-room-hide');
+    return false;
+  });
+});
+
+socket.on('refreshchat', function (history) {
+  $('#conversation').empty();
+  var a = 3;
+  $.each(history, function(key, msg) {
+    $('#conversation').prepend('<b>'+msg.time+':</b> '+ msg.text+'<br>');
+  });   
+});
+
+socket.on('addchat', function (msg) {
+  $('#conversation').prepend('<b>'+msg.time+':</b> '+ msg.text+'<br>');
+});
+
+// on load of page
+$(function(){
+  // when the client clicks SEND
+  $('#datasend').click( function() {
+    var message = $('#data').val();
+    $('#data').val('');
+    socket.emit('newchat', message);
+    $('#data').focus();
+    return false;
+  });
+
+  // when the client hits ENTER on their keyboard after typing a message
+  $('#data').keypress(function(e) {
+    if(e.which == 13) {
+      $('#datasend').click();
+      return false;
+    }
+  });
+  $('#room-select').click(function(){
+    $('#rooms').toggle();
+    return false;
+  });
+});
+
+</script>
+</body>
+</html>
