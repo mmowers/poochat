@@ -22,22 +22,30 @@ body{
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
+
+
+
+//socket.io connect and socket.on functions
 var socket = io.connect(document.URL);
 //var socket = io.connect('http://localhost:8080');
 socket.on('connect', function(){
+  //get current location
+  getLocation();
+  //is this blocking?? should I send a callback into getLocation and call callback(loc) from getLocation
+  //after putting sendPosition's code directly into getLocation?
 });
 
 socket.on('updaterooms', function (rooms) {
   $('#rooms').empty();
   $.each(rooms, function(key, value) {
-    $('#rooms').append('<div><a href="#">' + value + '</a></div>');
+    $('#rooms').append('<div><a id="'+value._id+'" href="#">' + value.name + '</a></div>');
   });
   //when the client selects a new room
   $('#rooms a').click(function(){
     $('#rooms').hide();
     $('#post-msg-form').show();
     $('#room-select').html($(this).text()+ '&#x25BC;');
-    socket.emit('newroom', $(this).text());
+    socket.emit('newroom', $(this).attr('id'));
     $('#rooms a.current-room-hide').removeClass('current-room-hide');
     $(this).addClass('current-room-hide');
     return false;
@@ -48,15 +56,17 @@ socket.on('refreshchat', function (history) {
   $('#conversation').empty();
   var a = 3;
   $.each(history, function(key, msg) {
-    $('#conversation').prepend('<b>'+msg.time+':</b> '+ msg.text+'<br>');
+    $('#conversation').append(msg.text+'<br>');
   });   
 });
 
 socket.on('addchat', function (msg) {
-  $('#conversation').prepend('<b>'+msg.time+':</b> '+ msg.text+'<br>');
+  $('#conversation').prepend(msg+'<br>');
 });
 
-// on load of page
+
+
+// JQuery actions on load of page
 $(function(){
   // when the client clicks SEND
   $('#datasend').click( function() {
@@ -79,6 +89,40 @@ $(function(){
     return false;
   });
 });
+
+
+
+//location functions
+function getLocation(){
+  if (navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(sendPosition,showError);
+  }
+  else{
+    alert("Sorry, geolocation is not supported by this browser.");
+  }
+}
+
+function sendPosition(position){
+  var loc = {lat:position.coords.latitude, lng:position.coords.longitude};
+  socket.emit('updatelocation', loc);
+}
+
+function showError(error){
+  switch(error.code){
+    case error.PERMISSION_DENIED:
+      alert("Sorry, there was a problem getting your current location.");
+      break;
+    case error.POSITION_UNAVAILABLE:
+      alert("Sorry, there was a problem getting your current location. Please enable your device's location services.");
+      break;
+    case error.TIMEOUT:
+      alert("Sorry, there was a problem getting your current location.");
+      break;
+    case error.UNKNOWN_ERROR:
+      alert("Sorry, there was a problem getting your current location.");
+      break;
+  }
+} 
 
 </script>
 </body>
