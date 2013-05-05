@@ -43,8 +43,7 @@ io.sockets.on('connection', function (socket) {
         console.log("error connecting to collection");
       }else{
         console.log("connected to collection");
-        collection.save({text:msg, time:new Date(), room_id:socket.room, red:25, green:25, blue:25}, {safe: true}, function(insErr,insRs) {
-        //collection.save({"text":msg, "time":new Date(), "room_id":{"$oid":socket.room}, "red":25, "green":25, "blue":25}, {safe: true}, function(insErr,insRs) {
+        collection.save({text:msg.text, time:new Date(), room_id:socket.room, red:msg.red, green:msg.green, blue:msg.blue}, {safe: true}, function(insErr,insRs) {
           if(insErr){
             console.log("error inserting");
           }else{

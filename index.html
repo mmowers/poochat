@@ -12,6 +12,9 @@ body{
 #data{
   max-width: 100%;
 }
+p{
+  margin: 5px auto 0;
+}
 </style>
 </head>
 <body>
@@ -27,7 +30,10 @@ Nearby: <span id="rooms"></span>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
 
-
+//current text color. all random numbers between 0-100 rounded to nearest 10
+var red = 10*Math.round(Math.random()*10);
+var green = 10*Math.round(Math.random()*10);
+var blue = 10*Math.round(Math.random()*10);
 
 //socket.io connect and socket.on functions
 var socket = io.connect(document.URL);
@@ -59,12 +65,12 @@ socket.on('refreshchat', function (history) {
   $('#conversation').empty();
   var a = 3;
   $.each(history, function(key, msg) {
-    $('#conversation').append(msg.text+'<br>');
+    $('#conversation').append('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+msg.text+'</p>');
   });   
 });
 
 socket.on('addchat', function (msg) {
-  $('#conversation').prepend(msg+'<br>');
+  $('#conversation').prepend('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+msg.text+'</p>');
 });
 
 
@@ -75,7 +81,7 @@ $(function(){
   $('#datasend').click( function() {
     var message = $('#data').val();
     $('#data').val('');
-    socket.emit('newchat', message);
+    socket.emit('newchat', {text:message, red:red, green:green, blue:blue});
     $('#data').focus();
     return false;
   });
