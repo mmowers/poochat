@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" name="viewport">
 <style>
 body{
   font-size: 16px;
 }
-#rooms, #post-msg-form, .current-room-hide{
+#post-msg-form, .current-room-hide{
   display: none;
+}
+#data{
+  max-width: 100%;
 }
 </style>
 </head>
 <body>
-Nearby: <div id="rooms"></div>
+Nearby: <span id="rooms"></span>
 <div id="cur-room"></div>
 <form id="post-msg-form">
   <input id="data"/>
@@ -38,7 +42,7 @@ socket.on('connect', function(){
 socket.on('updaterooms', function (rooms) {
   $('#rooms').empty();
   $.each(rooms, function(key, value) {
-    $('#rooms').append('<div><a id="'+value._id+'" href="#">' + value.name + '</a></div>');
+    $('#rooms').append('<span><a id="'+value._id+'" href="#">' + value.name + '</a> </span>');
   });
   //when the client selects a new room
   $('#rooms a').click(function(){
