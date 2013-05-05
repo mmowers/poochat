@@ -11,8 +11,8 @@ body{
 </style>
 </head>
 <body>
-<h1><a id="room-select" href="#">Nearby Walls &#x25BC;</a></h1>
-<div id="rooms"></div>
+Nearby: <div id="rooms"></div>
+<div id="cur-room"></div>
 <form id="post-msg-form">
   <input id="data"/>
   <input type="submit" id="datasend" value="Send" />
@@ -42,9 +42,8 @@ socket.on('updaterooms', function (rooms) {
   });
   //when the client selects a new room
   $('#rooms a').click(function(){
-    $('#rooms').hide();
     $('#post-msg-form').show();
-    $('#room-select').html($(this).text()+ '&#x25BC;');
+    $('#cur-room').html($(this).text()+ '&#x25BC;');
     socket.emit('newroom', $(this).attr('id'));
     $('#rooms a.current-room-hide').removeClass('current-room-hide');
     $(this).addClass('current-room-hide');
@@ -83,10 +82,6 @@ $(function(){
       $('#datasend').click();
       return false;
     }
-  });
-  $('#room-select').click(function(){
-    $('#rooms').toggle();
-    return false;
   });
 });
 

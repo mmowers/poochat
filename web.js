@@ -87,8 +87,8 @@ io.sockets.on('connection', function (socket) {
         console.log("error connecting to collection");
       }else{
         console.log("connected to collection");
-        collection.find({lat: {$lt: loc.lat+.1}, lat: {$gt: loc.lat-.1},
-                         lng: {$lt: loc.lng+.1}, lng: {$gt: loc.lng-.1}}, function(error, cursor){
+        collection.find({lat: {$lt: loc.lat+1}, lat: {$gt: loc.lat-1},
+                         lng: {$lt: loc.lng+1}, lng: {$gt: loc.lng-1}}, function(error, cursor){
           cursor.toArray(function(error, rooms){
             if(!rooms){
               socket.emit('updaterooms',[]);
@@ -97,16 +97,7 @@ io.sockets.on('connection', function (socket) {
             }
           });
         });
-        /*collection.save({'text':'third post', 'time':new Date(), 'room':'Starbucks','red':25, 'green':25, 'blue':25}, {safe: true}, function(insErr,insRs) {
-          if(insErr){
-            console.log("error inserting");
-          }else{
-            console.log("good insertion");
-          }
-        });*/
       }
-      //collection.insert({'mykey': 'myvalue'}, {safe: true}, function(er,rs) {
-      //});
     });
   });
 });
