@@ -86,8 +86,8 @@ io.sockets.on('connection', function (socket) {
         console.log("error connecting to collection");
       }else{
         console.log("connected to collection");
-        collection.find({lat: {$lt: loc.lat+.0012}, lat: {$gt: loc.lat-.0012},
-                         lng: {$lt: loc.lng+.0016}, lng: {$gt: loc.lng-.0016}}, function(error, cursor){
+        collection.find({lat: {$lt: loc.lat+.12}, lat: {$gt: loc.lat-.12},
+                         lng: {$lt: loc.lng+.16}, lng: {$gt: loc.lng-.16}}, function(error, cursor){
           cursor.toArray(function(error, rooms){
             if(!rooms){
               socket.emit('updaterooms',[]);
