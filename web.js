@@ -1,9 +1,11 @@
+var validator = require('validator');
 var mongo = require('mongodb');
 var express = require("express");
 var app = express();
 server = require('http').createServer(app);
 io = require('socket.io').listen(server);
 app.use(express.logger());
+app.use(express.static(__dirname + '/public'));
 
 
 var mongoUri = process.env.MONGOLAB_URI || 
@@ -43,7 +45,9 @@ io.sockets.on('connection', function (socket) {
         console.log("error connecting to collection");
       }else{
         console.log("connected to collection");
-        collection.save({text:msg.text, time:new Date(), room_id:socket.room, red:msg.red, green:msg.green, blue:msg.blue}, {safe: true}, function(insErr,insRs) {
+        //var cleanedText = msg.text;
+        var cleanedText = validator.toString(validator.escape(msg.text));
+        collection.save({text:cleanedText, time:new Date(), room_id:socket.room, red:msg.red, green:msg.green, blue:msg.blue}, {safe: true}, function(insErr,insRs) {
           if(insErr){
             console.log("error inserting");
           }else{
@@ -86,8 +90,10 @@ io.sockets.on('connection', function (socket) {
         console.log("error connecting to collection");
       }else{
         console.log("connected to collection");
-        collection.find({lat: {$lt: loc.lat+.12}, lat: {$gt: loc.lat-.12},
-                         lng: {$lt: loc.lng+.16}, lng: {$gt: loc.lng-.16}}, function(error, cursor){
+        /*collection.find({lat: {$lt: loc.lat+.12}, lat: {$gt: loc.lat-.12},
+                         lng: {$lt: loc.lng+.16}, lng: {$gt: loc.lng-.16}}, function(error, cursor){*/
+        collection.find({lat: {$lt: loc.lat+1000}, lat: {$gt: loc.lat-1000},
+                         lng: {$lt: loc.lng+1000}, lng: {$gt: loc.lng-1000}}, function(error, cursor){
           cursor.toArray(function(error, rooms){
             if(!rooms){
               socket.emit('updaterooms',[]);

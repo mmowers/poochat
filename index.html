@@ -16,6 +16,14 @@ p{
   margin: 5px auto 0;
 }
 </style>
+<!--<script src="/html-sanitizer.js"></script>
+<script>
+  function urlX(url) { if(/^https?:\/\//.test(url)) { return url }}
+  function idX(id) { return id }
+  alert(html_sanitize('<b>hello</b><img src="http://asdf"><a href="javascript:alert(0)"><script src="http://dfd"><\/script>', urlX, idX))
+</script>-->
+<script type="text/javascript" src="/validator.min.js"></script>
+
 </head>
 <body>
   <div id="fb-root"></div>
@@ -92,12 +100,14 @@ socket.on('refreshchat', function (history) {
   $('#conversation').empty();
   var a = 3;
   $.each(history, function(key, msg) {
-    $('#conversation').append('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+msg.text+'</p>');
+    //$('#conversation').append('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+msg.text+'</p>');
+    $('#conversation').append('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+validator.escape(msg.text)+'</p>');
   });   
 });
 
 socket.on('addchat', function (msg) {
-  $('#conversation').prepend('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+msg.text+'</p>');
+  //$('#conversation').prepend('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+msg.text+'</p>');
+  $('#conversation').prepend('<p style="color:rgb('+msg.red+','+msg.green+','+msg.blue+')">'+validator.escape(msg.text)+'</p>');
 });
 
 
@@ -106,7 +116,8 @@ socket.on('addchat', function (msg) {
 $(function(){
   // when the client clicks SEND
   $('#datasend').click( function() {
-    var message = $('#data').val();
+    //var message = $('#data').val();
+    var message = validator.escape($('#data').val());
     $('#data').val('');
     socket.emit('newchat', {text:message, red:red, green:green, blue:blue});
     $('#data').focus();
